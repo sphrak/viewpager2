@@ -42,8 +42,10 @@ class StartFragment : Fragment() {
         startAdapter = StartAdapter(requireActivity())
         binding.viewpager.adapter = startAdapter
 
-        viewPager.setPageTransformer(null)
-        viewPager.isUserInputEnabled = false
+        viewPager.apply {
+            setPageTransformer(null)
+            isUserInputEnabled = false
+        }
 
         val bottomNavigationView = binding.bottomNavigationView
 
@@ -53,14 +55,13 @@ class StartFragment : Fragment() {
 
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_home -> viewPager.setCurrentItem(0, false)
-                R.id.navigation_dashboard -> viewPager.setCurrentItem(1, false)
-                R.id.navigation_notifications -> viewPager.setCurrentItem(2, false)
+                R.id.navigation_home -> viewPager.setCurrentItem(startAdapter.itemIdByPosition(HOME_FRAGMENT_KEY), false)
+                R.id.navigation_dashboard -> viewPager.setCurrentItem(startAdapter.itemIdByPosition(DASHBOARD_FRAGMENT_KEY), false)
+                R.id.navigation_notifications -> viewPager.setCurrentItem(startAdapter.itemIdByPosition(NOTIFICATION_FRAGMENT_KEY), false)
             }
             true
         }
 
-        // Sync ViewPager swipe with BottomNavigationView
         viewPager.registerOnPageChangeCallback(onPageChangeCallback)
 
         viewModel
@@ -74,9 +75,8 @@ class StartFragment : Fragment() {
     private fun handleState(state: State) {
         when (state) {
             is State.BottomNav -> {
-                startAdapter.submitList(state.items)
-                // update menu
-                binding.bottomNavigationView.setupMenu(state.items)
+                startAdapter.submitList(items = state.items)
+                binding.bottomNavigationView.setupMenu(items = state.items)
 
                 if (startAdapter.itemCount > 0) {
                     viewPager.offscreenPageLimit = startAdapter.itemCount
@@ -107,8 +107,12 @@ class StartFragment : Fragment() {
     private fun BottomNavigationView.setupMenu(items: List<BottomNavEntry>) {
         menu.clear()
         for (item in items) {
-            menu.add(Menu.NONE, item.id, Menu.NONE, item.title)
-                .setIcon(item.drawableRes)
+            menu.add(
+                /* groupId = */ Menu.NONE,
+                /* itemId  = */ item.id,
+                /* order   = */ Menu.NONE,
+                /* title   = */ item.title
+            ).setIcon(item.drawableRes)
         }
     }
 

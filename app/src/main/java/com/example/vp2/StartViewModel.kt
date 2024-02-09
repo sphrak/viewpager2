@@ -37,7 +37,6 @@ class StartViewModel : ViewModel() {
     val state: StateFlow<State> = _state.asStateFlow()
 
     fun onClick() {
-        println("on click")
         viewModelScope.launch {
             _state.update {
                 State.BottomNav(

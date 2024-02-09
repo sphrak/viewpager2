@@ -9,46 +9,69 @@ import com.example.vp2.ui.home.HomeFragment
 import com.example.vp2.ui.notifications.NotificationsFragment
 
 
-const val HOME_FRAGMENT = "home_fragment"
-const val NOTIFICATION_FRAGMENT = "notification_fragment"
-const val DASHBOARD_FRAGMENT = "dashboard_fragment"
+const val HOME_FRAGMENT_KEY = 0x1L
+const val NOTIFICATION_FRAGMENT_KEY = 0x2L
+const val DASHBOARD_FRAGMENT_KEY = 0x3L
 
 class StartAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
 
-    private val fragments: MutableMap<String, Fragment> = mutableMapOf()
+    private val fragments: MutableList<Pair<Long, Fragment>> = mutableListOf()
 
     @SuppressLint("NotifyDataSetChanged")
     fun submitList(items: List<BottomNavEntry>) {
-        val updatedFragments = items.associate { item ->
+
+        val updatedFragments: List<Pair<Long, Fragment>> = items.map { item: BottomNavEntry ->
+
             val key = when (item) {
-                BottomNavEntry.HOME -> HOME_FRAGMENT
-                BottomNavEntry.DASHBOARD -> DASHBOARD_FRAGMENT
-                BottomNavEntry.NOTIFICATIONS -> NOTIFICATION_FRAGMENT
+                BottomNavEntry.HOME -> HOME_FRAGMENT_KEY
+                BottomNavEntry.DASHBOARD -> DASHBOARD_FRAGMENT_KEY
+                BottomNavEntry.NOTIFICATIONS -> NOTIFICATION_FRAGMENT_KEY
             }
+
+            val fragment: Pair<Long, Fragment>? = fragments.find { it.first == key }
+
             key to when (item) {
-                BottomNavEntry.HOME -> fragments.getOrPut(key) { HomeFragment() }
-                BottomNavEntry.DASHBOARD -> fragments.getOrPut(key) { DashboardFragment() }
-                BottomNavEntry.NOTIFICATIONS -> fragments.getOrPut(key) { NotificationsFragment() }
+                BottomNavEntry.HOME -> fragment?.second ?: HomeFragment()
+                BottomNavEntry.DASHBOARD -> fragment?.second ?: DashboardFragment()
+                BottomNavEntry.NOTIFICATIONS -> fragment?.second ?: NotificationsFragment()
             }
         }
+        println("updated fragments = $updatedFragments")
 
-        val keysToRemove = fragments.keys - updatedFragments.keys
-
-        keysToRemove.forEach { key ->
+        val keysToRemove: List<Pair<Long, Fragment>> = fragments - updatedFragments
+        println("keys to remove = $keysToRemove")
+        keysToRemove.forEach { key: Pair<Long, Fragment> ->
             fragments.remove(key)
         }
 
+        updatedFragments.forEach {
+            if (!fragments.contains(it)) {
+                fragments.add(it)
+            }
+        }
+
+        println("fragments: $fragments")
         notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = fragments.size
+    override fun getItemId(position: Int): Long {
+        return fragments[position].first
+    }
+    override fun containsItem(itemId: Long): Boolean {
+        return fragments.any {
+            it.first == itemId
+        }
+    }
+
+    // itemId -> pos
+    fun itemIdByPosition(itemId: Long): Int {
+        return fragments.indexOfFirst {
+            it.first == itemId
+        }
+    }
 
     override fun createFragment(
         position: Int
-    ): Fragment = when (position) {
-        0 -> fragments.getOrDefault(key = HOME_FRAGMENT, defaultValue = HomeFragment())
-        1 -> fragments.getOrDefault(key = DASHBOARD_FRAGMENT, defaultValue = DashboardFragment())
-        2 -> fragments.getOrDefault(key = NOTIFICATION_FRAGMENT, defaultValue = NotificationsFragment())
-        else -> error("invalid")
-    }
+    ): Fragment = fragments[position].second
 }
