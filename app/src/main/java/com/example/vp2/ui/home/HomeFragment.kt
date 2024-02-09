@@ -17,11 +17,20 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println("HomeFragment -- on create")
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        println("HomeFragment -- on create view")
+
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
@@ -35,8 +44,22 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        println("HomeFragment -- on view created")
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("HomeFragment -- on resume")
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        println("HomeFragment -- on view destroyed")
+
         _binding = null
     }
 }

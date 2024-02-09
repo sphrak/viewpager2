@@ -44,9 +44,7 @@ class StartFragment : Fragment() {
 
         viewPager.setPageTransformer(null)
         viewPager.isUserInputEnabled = false
-        if (startAdapter.itemCount > 0) {
-            viewPager.offscreenPageLimit = startAdapter.itemCount
-        }
+
         val bottomNavigationView = binding.bottomNavigationView
 
         binding.button.setOnClickListener {
@@ -79,6 +77,10 @@ class StartFragment : Fragment() {
                 startAdapter.submitList(state.items)
                 // update menu
                 binding.bottomNavigationView.setupMenu(state.items)
+
+                if (startAdapter.itemCount > 0) {
+                    viewPager.offscreenPageLimit = startAdapter.itemCount
+                }
             }
             State.Idle -> Unit
         }

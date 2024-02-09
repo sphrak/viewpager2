@@ -17,11 +17,18 @@ class DashboardFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println("DashboardFragment -- on create")
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        println("DashboardFragment -- on create view")
+
         val dashboardViewModel =
             ViewModelProvider(this).get(DashboardViewModel::class.java)
 
@@ -35,8 +42,20 @@ class DashboardFragment : Fragment() {
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        println("DashboardFragment -- on view created")
+
+    }
+    override fun onResume() {
+        super.onResume()
+        println("DashboardFragment -- on resume")
+
+    }
     override fun onDestroyView() {
         super.onDestroyView()
+        println("DashboardFragment -- on view destroyed")
+
         _binding = null
     }
 }

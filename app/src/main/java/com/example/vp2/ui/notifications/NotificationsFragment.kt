@@ -17,6 +17,12 @@ class NotificationsFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println("NotificationsFragment -- on create")
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,11 +38,26 @@ class NotificationsFragment : Fragment() {
         notificationsViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+        println("NotificationsFragment -- on create view")
+
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        println("NotificationsFragment -- on view created")
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("NotificationsFragment -- on resume")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        println("NotificationsFragment -- on view destroyed")
+
         _binding = null
     }
 }
